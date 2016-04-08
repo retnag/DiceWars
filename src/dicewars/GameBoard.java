@@ -123,12 +123,14 @@ public class GameBoard extends Map<Cell> implements Graphical{
             i.render(g, layout);
         }
         
-        for(Cell i : getSpecTiles(Cell.CELL_SELECTED)){
-            i.render(g, layout);
-        }
+//        for(Cell i : getSpecTiles(Cell.CELL_SELECTED)){
+//            i.render(g, layout);
+//        }
         
         try{
+            mouseOver.select();
             mouseOver.render(g, layout);
+            mouseOver.deselect();
         }catch(NullPointerException ex){};
 //        try {
 //            System.in.read();
@@ -172,12 +174,6 @@ public class GameBoard extends Map<Cell> implements Graphical{
 //        //END OF Debugging
     }
 
-    public void update(State s) {
-//        try {
-//            Thread.sleep(8);
-//        } catch (InterruptedException ex) {
-//            Logger.getLogger(GameBoard.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-    }
+
     
 }

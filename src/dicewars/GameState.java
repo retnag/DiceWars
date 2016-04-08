@@ -13,6 +13,7 @@ import gameTools.map.generators.MapGeneratorHexHexagonPointy;
 import gameTools.map.generators.MapGeneratorHexRectangleFlat;
 import gameTools.state.State;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
@@ -21,6 +22,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import sun.invoke.util.ValueConversions;
 
 /**
  *
@@ -34,26 +36,17 @@ public class GameState extends State
     Player[] players;
     Thread gameBoardGenerator;
     Point mousePointer;
+    Cell mouseOver;
     
     public GameState() {
         super("GameState", Main.GAME_WIDTH, Main.GAME_HEIGHT);
         addMouseListener(this);
         addMouseMotionListener(this);
-//        MapGenerator<Cell> MapGenerator = new MapGeneratorHexRectanglePointy<>(new Cell(0, 0), 6, 10);
-        MapGenerator<Cell> MapGenerator = new MapGeneratorHexRectangleFlat<>(new Cell(0, 0), 50, 50);
-//        MapGenerator<Cell> MapGenerator = new MapGeneratorHexParalelogram<>(new Cell(0, 0), 6, 10);
-//        MapGenerator<Cell> MapGenerator  = new MapGeneratorHexHexagonPointy<>(new Cell(0, 0), 6);
-        Layout layout = new Layout(Orientation.LAYOUT_FLAT, new Point(8,4), new Point(10,10));
+        MapGenerator<Cell> MapGenerator = new MapGeneratorHexRectangleFlat<>(new Cell(0, 0), 50, 30);
+        Layout layout = new Layout(Orientation.LAYOUT_FLAT, new Point(8,6), new Point(10,10));
 
         gameboard = new GameBoard(MapGenerator , layout);
         gameboard.generateTerritories(25);
-
-
-//        gameboard.getTile(0,0).selected = true;
-//        
-//        for(Cell i : gameboard.getSpecNeighborTiles(Cell.CELL_NOT_OWNED, 2,2)){
-//            i.selected = true;
-//        }
 
         players = new Player[3];
                        
@@ -67,34 +60,42 @@ public class GameState extends State
     
     @Override
     public void render(){
-        RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        rh.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        g.setRenderingHints(rh);
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, Main.GAME_WIDTH, Main.GAME_HEIGHT);
+        if(ticks%1000 == 0) redraw();
 //        g.fillRect(0, 0, 300, 300);
         gameboard.render(g);
-        super.render();
+        
+        g.setColor(Color.gray);
+        g.fillRect(width-80, height-15, width, height);
+        
+        String s = fpsCounter.fps() + " fps";
+        int rightJustifiedBase = width-3;
+        int stringWidth = g.getFontMetrics().stringWidth(s);
+        int x = rightJustifiedBase - stringWidth;
+        
+        g.setColor(Color.WHITE);
+        g.drawString(s, x, height-3);
+//        g.drawString(s, width-100, height-3);
+    }
+    
+    private void redraw(){
+        //clear screen
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, Main.GAME_WIDTH, Main.GAME_HEIGHT);
+        //mark all cells to be repaired
+        for(Cell c : gameboard.values()){
+            c.touch();
+        }
     }
     
     @Override
     public void update(State s){
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException ex) {
-        }
-        gameboard.update(this);
 
         try{
-            if(gameboard.mouseOver != null) gameboard.mouseOver.selected = false;
-            Cell c = gameboard.fromPixel(mousePointer.x, mousePointer.y);
-            gameboard.mouseOver = c;
-            gameboard.mouseOver.selected = true;
-        }catch(NullPointerException x){
-            gameboard.mouseOver = null;
-        }
-    }
+            gameboard.mouseOver = gameboard.fromPixel(mousePointer.x, mousePointer.y);
+        } catch(NullPointerException ignore){}
 
+    }
+    
     @Override
     public void mouseClicked(MouseEvent e) {
     }
@@ -122,5 +123,8 @@ public class GameState extends State
     @Override
     public void mouseMoved(MouseEvent e) {
         mousePointer = new Point(e.getX(), e.getY());
+//        mouseOver = gameboard.fromPixel(e.getX(), e.getY());
+//        gameboard.mouseOver = gameboard.fromPixel(e.getX(), e.getY());
+        
     }
 }

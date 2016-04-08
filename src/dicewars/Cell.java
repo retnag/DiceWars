@@ -42,8 +42,10 @@ public class Cell extends TileHex{
         }
     };
     
-    public Territory owner;
-    public boolean selected;
+    private Territory owner;
+    private boolean selected;
+    
+    private boolean updated = true;
 
     public Cell( int q, int r, int s) {
         super(q, r, s);
@@ -54,6 +56,31 @@ public class Cell extends TileHex{
         super(q, r, -q-r);
     }
     
+    public void touch(){
+        this.updated = true;
+    }
+
+    public void select() {
+        this.selected = true;
+        touch();
+    }
+    public void deselect() {
+        this.selected = false;
+        touch();
+    }
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public Territory getOwner() {
+        return owner;
+    }
+    public void setOwner(Territory owner) {
+        this.owner = owner;
+        touch();
+    }
+
+    
     @Override
     public Cell newTile(int... i) {
         return new Cell(i[0], i[1]);
@@ -61,19 +88,26 @@ public class Cell extends TileHex{
     
     @Override
     public void render(Graphics2D g, Layout layout) {
-            
+        if(!updated){
+            return;
+        } else {
+            updated=false;
+        }
         
         if (selected){
             g.setColor(Color.WHITE);
+            g.fill(polygonCorners(layout));
         } else {
             if(owner != null && owner.owner != null){
                 g.setColor(owner.owner.getColor());
             } else {
                 g.setColor(Color.GRAY);
             }
+            g.fill(polygonCorners(layout));
         }
+        g.setColor(Color.black);
+        g.draw(polygonCorners(layout));
         //draw boundaries
-        g.fill(polygonCorners(layout));
         
 //        //draw info - Debug
 //        g.setColor(Color.BLACK);

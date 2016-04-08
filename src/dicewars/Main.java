@@ -1,30 +1,21 @@
-package Test;
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import gameTools.Physical;
+package dicewars;
+
 import gameTools.state.StateManager;
-import dicewars.Cell;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import javax.swing.JFrame;
 
 /**
  *
  * @author ganter
  */
-public class TestGraphics extends JFrame{
-    /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+public class Main extends JFrame{
     
-    public static final int GAME_WIDTH = 800;
-    public static final int GAME_HEIGHT = 600;
+    public static final int GAME_WIDTH = 600;
+    public static final int GAME_HEIGHT = 400;
 //    public static boolean dbgHitbox = true;
 //    public static boolean dbgCoord = true;
 //    public static boolean dbgAll = true;
@@ -37,22 +28,22 @@ public class TestGraphics extends JFrame{
     public static int numOfPlayers;
     
     private StateManager sm = new StateManager(this);
-    private TestState test;
+    private GameState game;
     
-    public TestGraphics(){
+    public Main(){
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //        this.setSize(GAME_WIDTH,GAME_HEIGHT);
         this.setResizable(false);
         this.setTitle("DiceWars");
         this.setLocationRelativeTo(null);
         
+        numOfPlayers = 4;
         
+        game = new GameState();
         
-        test = new TestState("TestState");
+        sm.addState(game);
         
-        sm.addState(test);
-        
-        sm.setCurrentState("TestState");
+        sm.setCurrentState("GameState");
         sm.startCurrentState();
         this.setVisible(true);
     }
@@ -61,8 +52,7 @@ public class TestGraphics extends JFrame{
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        TestGraphics main = new TestGraphics();
+        main = new Main();
     }
-    
-    
+    static Main main;
 }

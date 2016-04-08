@@ -26,7 +26,7 @@ public class Territory {
         
         void add(Cell c){
             cells.add(c);
-            c.owner=this;
+            c.setOwner(this);
         }
         
     }
