@@ -1,16 +1,10 @@
 package dicewars;
 
-import gameTools.Graphical;
-import gameTools.state.State;
 import gameTools.map.TileHex;
 import gameTools.map.Layout;
-import gameTools.map.Map;
-import gameTools.map.Orientation;
-import com.sun.xml.internal.fastinfoset.algorithm.HexadecimalEncodingAlgorithm;
 import gameTools.map.Tester;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Point;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
