@@ -6,23 +6,16 @@
 package dicewars;
 
 import gameTools.map.Layout;
-import gameTools.map.Map;
 import gameTools.map.Orientation;
 import gameTools.map.generators.MapGenerator;
-import gameTools.map.generators.MapGeneratorHexHexagonPointy;
 import gameTools.map.generators.MapGeneratorHexRectangleFlat;
 import gameTools.state.State;
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import sun.invoke.util.ValueConversions;
 
 /**
  *
