@@ -27,12 +27,12 @@ public class Cell extends TileHex{
     public static final Tester<Cell> CELL_SELECTED = new Tester<Cell>(){
         @Override
         public boolean test(Cell c) {
-            return c.selected;
+            return c.highlighted;
         }
     };
     public static final Tester<Cell> CELL_NOT_SELECTED = new Tester<Cell>(){@Override
         public boolean test(Cell c) {
-            return !c.selected;
+            return !c.highlighted;
         }
     };
     public static final Tester<Cell> CELL_NOT_OWNED = new Tester<Cell>(){
@@ -43,13 +43,13 @@ public class Cell extends TileHex{
     };
     
     private Territory owner;
-    private boolean selected;
+    private boolean highlighted;
     
     private boolean updated = true;
 
     public Cell( int q, int r, int s) {
         super(q, r, s);
-        selected = false;
+        highlighted = false;
     }
     
     public Cell( int q, int r) {
@@ -60,16 +60,16 @@ public class Cell extends TileHex{
         this.updated = true;
     }
 
-    public void select() {
-        this.selected = true;
+    public void highlight() {
+        this.highlighted = true;
         touch();
     }
-    public void deselect() {
-        this.selected = false;
+    public void unLight() {
+        this.highlighted = false;
         touch();
     }
-    public boolean isSelected() {
-        return selected;
+    public boolean isHighlighted() {
+        return highlighted;
     }
 
     public Territory getOwner() {
@@ -94,19 +94,14 @@ public class Cell extends TileHex{
             updated=false;
         }
         
-        if (selected){
-            g.setColor(Color.WHITE);
-            g.fill(polygonCorners(layout));
-        } else {
-            if(owner != null && owner.owner != null){
-                g.setColor(owner.owner.getColor());
-            } else {
-                g.setColor(Color.GRAY);
-            }
+        g.fill(polygonCorners(layout));
+        
+            
+        if (highlighted){
+            g.setColor(new Color(255, 255, 255, 100));
             g.fill(polygonCorners(layout));
         }
-        g.setColor(Color.black);
-        g.draw(polygonCorners(layout));
+        
         //draw boundaries
         
 //        //draw info - Debug
