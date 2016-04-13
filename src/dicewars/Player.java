@@ -5,11 +5,9 @@
  */
 package dicewars;
 
-import dicewars.states.GameState;
 import gameTools.state.InputManager;
 import java.awt.Color;
 import java.util.ArrayList;
-import javax.swing.InputMap;
 
 /**
  *
@@ -38,9 +36,10 @@ public abstract class Player {
     
 // --- END OF static fields and methods ---
     
-    private int team;
-    private Color color;
-    public ArrayList<Territory> territories;
+    protected int team;
+    protected Color color;
+    protected ArrayList<Territory> territories;
+    protected boolean isAlive;
     
     public Player(){
         this(Color.YELLOW);
@@ -72,8 +71,20 @@ public abstract class Player {
         return this.team;
     }
     
+    public boolean isOwner(Territory t){
+        for(Territory t2 : territories){
+            if(t2.equals(t)){
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public void addTerritory(Territory t){
         territories.add(t);
+    }
+    public ArrayList<Territory> getTerritories(){
+        return territories;
     }
     public void removeTerritory(Territory t){
         territories.remove(t);
@@ -91,6 +102,18 @@ public abstract class Player {
         this.color = color;
     }
     
+    public boolean isAlive(){
+        return isAlive;
+    }
+    
+    public void kill(){
+        this.isAlive=false;
+    }
+    
+    public void reincarnate(){
+        this.isAlive = true;
+    }
+    
     public abstract void selectBase(GameBoard board, InputManager input)  throws EndOfTurnException;
     
     public abstract void selectTarget(GameBoard board, InputManager input)  throws EndOfTurnException;
@@ -104,9 +127,9 @@ public abstract class Player {
                 board.evaluateMove();
             }catch(EndOfTurnException e){
                 endOfTurn=true;
-            }finally{
             }
         }
+        board.finishRound(this);
     }
     
 }

@@ -32,22 +32,12 @@ import java.util.ArrayList;
  */
 public class GameState extends State{
     private GameState THIS = this;
+    public boolean gameOver;
     int volume;
     GameBoard gameboard;
     Player[] players = new Player[0];
     Cell mouseOver;
-    Thread playerThread = new Thread(new Runnable() {
-        boolean gameover = false;
-        @Override
-        public void run() {
-            while(!gameover){
-                
-                for(Player p : players){
-                    p.play(gameboard, inputManager);
-                }
-            }
-        }
-});
+    Thread playerThread;
     
     public GameState() {
         super("GameState", Main.GAME_WIDTH, Main.GAME_HEIGHT);
@@ -75,13 +65,46 @@ public class GameState extends State{
         players = new Player[Player.PLAYERS.size()];
         for(int i = 0; i< Player.PLAYERS.size(); i++){
             players[i] = Player.PLAYERS.get(i);
+            players[i].reincarnate();
         }
+        playerThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(!THIS.gameOver){
+                    THIS.gameOver = true;
+                    int teamAlive = -1;
+                    for(Player p : players){
+                        if(p.isAlive()){
+                            p.play(gameboard, inputManager);
+                            if(teamAlive == -1){
+                                teamAlive = p.getTeam();
+                            } else if (teamAlive != p.getTeam()){
+                                THIS.gameOver = false;
+                            }
+                        }
+                    }
+                }
+                gameOver();
+            }
+        });
         playerThread.start();
     }
+    
+    private void gameOver(){
+        System.out.println("GAME OVER!");
+    }
+    
     @Override
     public void start(){
+        gameOver=false;
         create();
         super.start();
+    }
+    
+    @Override
+    public void stop(){
+        gameOver=true;
+        super.stop();
     }
     
     @Override

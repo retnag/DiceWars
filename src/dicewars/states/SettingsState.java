@@ -19,8 +19,8 @@ public class SettingsState extends State {
 
     private ArrayList<PlayerEntry> pe_s = new ArrayList();
     
-    public void addPlayer(){
-        PlayerEntry pe = new PlayerEntry(this);
+    public void addPlayer(String type){
+        PlayerEntry pe = new PlayerEntry(this, type);
         pe_s.add(pe);
         panePlayers.add(pe);
         for(PlayerEntry p : pe_s){
@@ -54,9 +54,8 @@ public class SettingsState extends State {
     public SettingsState() {
         super("SettingsState", Main.GAME_WIDTH, Main.GAME_HEIGHT);
         initComponents();
-        addPlayer();
-        addPlayer();
-        addPlayer();
+        addPlayer("Human");
+        addPlayer("AI");
         Tps=1;
         maxFps=30;
     }
@@ -220,7 +219,7 @@ public class SettingsState extends State {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddPlayerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddPlayerActionPerformed
-        addPlayer();
+        addPlayer("Human");
     }//GEN-LAST:event_btnAddPlayerActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed

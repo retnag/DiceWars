@@ -34,9 +34,11 @@ public class PlayerHuman extends Player{
                 }
                 if(input.isClicked("ButtonLeft")){
                     Territory t = board.fromPixel(input.getMousePos().x, input.getMousePos().y).getOwner();
-                    board.selectBase(t);
-                    System.out.printf("Player%d selecting BASE   territory %d%n",getId(), t.id);
-                    return;
+                    if(isOwner(t) && t.getStrength()>1){
+                        board.selectBase(t);
+                        System.out.printf("Player%d selecting BASE   territory %d%n",getId(), t.id);
+                        return;
+                    }
                 }
                 Thread.sleep(50);
             } catch(NullPointerException | InterruptedException ignore){}
@@ -52,10 +54,11 @@ public class PlayerHuman extends Player{
                 }
                 if(input.isClicked("ButtonLeft")){
                     Territory t = board.fromPixel(input.getMousePos().x, input.getMousePos().y).getOwner();
+                    
                     if(board.getSelectedBase().equals(t)){
                         board.unSelectBase();
                         selectBase(board, input);
-                    }else{
+                    }else if(board.getSelectedBase().isNeighbor(t, board) && (t.getOwner().team != this.team)){
                         board.selectTarget(t);
                         System.out.printf("Player%d selecting TARGET territory %d%n",getId(), t.id);
                         return;

@@ -13,7 +13,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
-import java.util.Random;
 
 /**
  *
@@ -71,9 +70,10 @@ public class GameBoard extends Map<Cell> implements Graphical{
                 index = (int) Math.floor(Math.random()*size());
                 f = cells[index];
                 for(int j = 0; j < i; j++){
-                    if(f.equals(territories[j].cells.get(0))) ok = false;
+                    if(f.equals(territories[j].getCells().get(0))) ok = false;
                 }
             }while(!ok);
+//            territories[i] = Settings.usedTerritory.getInstance();
             territories[i] = new Territory();
             territories[i].add(f);
         }
@@ -82,18 +82,17 @@ public class GameBoard extends Map<Cell> implements Graphical{
             territories[i].setOwner(Player.PLAYERS.get(i%Player.PLAYERS.size()));
         }
         
-        final Random RANDOM = new Random();
         
         //distribute Dices
         for(Player p : Player.PLAYERS){
-            int power = TPP*3;
-            for(Territory t : p.territories){
-                power -= t.addStrength(1);
+            int num = 3*TPP;
+            for(Territory t : p.getTerritories()){
+                num -= t.addDices(1);
             }
 
-            while(power>0){
-                int rand = RANDOM.nextInt(p.territories.size());
-                power -= p.territories.get(rand).addStrength(1);
+            while(num>0){
+                int rand = Main.RANDOM.nextInt(p.getTerritories().size());
+                num -= p.getTerritories().get(rand).addDices(1);
             }
         }
         
@@ -106,7 +105,7 @@ public class GameBoard extends Map<Cell> implements Graphical{
             for(Territory territory : territories){ //at the end of this loop every territory(that can) gets new member(s)
                 ArrayList<Cell> unownedNeighborsOfTerritory = new ArrayList<>(); //unowned neighboring cells of the territory
                 //collect the cells that have empty neighbors
-                for(Cell cell: territory.cells){
+                for(Cell cell: territory.getCells()){
                     unownedNeighborsOfCell = getSpecNeighborTiles(Cell.CELL_NOT_OWNED, cell.x, cell.y);
                     if (! unownedNeighborsOfCell.isEmpty()){
                         emptyNeighborFound = true;
@@ -121,7 +120,7 @@ public class GameBoard extends Map<Cell> implements Graphical{
                 for(int i = 0; i< 10; i++){
                     if(!unownedNeighborsOfTerritory.isEmpty()){
                         //get random cell from the collected ownerless cells
-                        Cell c = unownedNeighborsOfTerritory.remove(RANDOM.nextInt(unownedNeighborsOfTerritory.size()));
+                        Cell c = unownedNeighborsOfTerritory.remove(Main.RANDOM.nextInt(unownedNeighborsOfTerritory.size()));
                         if (c == null) break;
                         territory.add(c);
                     }
@@ -150,8 +149,8 @@ public class GameBoard extends Map<Cell> implements Graphical{
         }
     }
     public void unSelectBase(){
-            selectedBase.touch();
-            selectedBase = null;
+        if(selectedBase != null) selectedBase.touch();
+        selectedBase = null;
     }
     
     public void selectTarget(Territory t){
@@ -159,7 +158,6 @@ public class GameBoard extends Map<Cell> implements Graphical{
     }
     
     public void unSelectTarget(){
-        selectedTarget.touch();
         selectedTarget = null;
     }
     
@@ -171,18 +169,36 @@ public class GameBoard extends Map<Cell> implements Graphical{
         for(int i : baseRoll) baseRollSum+=i;
         for(int i : targetRoll) targetRollSum+=i;
         if(baseRollSum > targetRollSum){ //win!
-            selectedTarget.strength=selectedBase.strength-1;
-            selectedTarget.setOwner(selectedBase.owner);
+            selectedTarget.setStrength(selectedBase.getStrength()-1);
+            selectedTarget.setOwner(selectedBase.getOwner());
         }
-        selectedBase.strength=1;
+        selectedBase.setStrength(1);
         
         unSelectBase();
         unSelectTarget();
     }
     
-    public void finishRound(){
+    public void finishRound(Player p){
+        int num = (int) Math.round(p.getTerritoryNum()/2.0);
+        
+        int maxNum = 0;
+        for(Territory t : p.getTerritories()){
+            maxNum += 8-t.getStrength();
+        }
+        num = (num > maxNum)? maxNum : num;
+        
+        while(num>0){
+            int rand = Main.RANDOM.nextInt(p.getTerritories().size());
+            num -= p.getTerritories().get(rand).addDices(1);
+        }
+
         unSelectBase();
         unSelectTarget();
+        
+        for(Player pp : Player.PLAYERS){
+            if(pp.getTerritoryNum() == 0)
+                pp.kill();
+        }
     }
     
     @Override

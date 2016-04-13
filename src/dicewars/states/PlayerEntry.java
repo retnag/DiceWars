@@ -32,6 +32,7 @@ import javax.swing.event.ListDataListener;
 public class PlayerEntry extends JPanel {
     private final PlayerEntry THIS = this;
     private Player player;
+    private String type;
     private SettingsState parent;
 
     public Player getPlayer() {
@@ -42,11 +43,20 @@ public class PlayerEntry extends JPanel {
     /**
      * Creates new form PlayerEntry
      * @param panel
+     * @param type
      */
-    public PlayerEntry(SettingsState panel) {
+    public PlayerEntry(SettingsState panel, String type) {
         int pNum = PlayerHuman.getNumOfPlayers();
         parent = panel;
-        player = new PlayerHuman((pNum <= Player.COLORS.length)? Player.COLORS[pNum] : Color.YELLOW);
+        this.type = type;
+        switch(type){
+            case "Human":
+                player = new PlayerHuman((pNum <= Player.COLORS.length)? Player.COLORS[pNum] : Color.YELLOW);
+                break;
+            case "AI":
+                player = new PlayerAI((pNum <= Player.COLORS.length)? Player.COLORS[pNum] : Color.YELLOW);
+                break;
+        }
         initComponents();
     }
     
@@ -177,6 +187,7 @@ public class PlayerEntry extends JPanel {
         boxColor.setSelectedItem(player.getColor());
         
         boxPlayerType.setModel(new DefaultComboBoxModel<>(new String[] {"Human", "AI"}));
+        boxPlayerType.setSelectedItem(type);
         boxPlayerType.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

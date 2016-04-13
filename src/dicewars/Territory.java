@@ -6,6 +6,8 @@
 package dicewars;
 
 import gameTools.map.Layout;
+import gameTools.map.Map;
+import gameTools.map.Tester;
 import gameTools.map.Tile;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -23,20 +25,18 @@ import java.util.Iterator;
  * @author ganter
  */
 public class Territory {
-        static int numOfTerritories=0;
+        private static int numOfTerritories=0;
         private static final int maxStrength = 8;
         public final int id=++numOfTerritories;
-        public Player owner;
+        private Player owner;
         public int strength;
         public final ArrayList<Cell> cells; //inside
-        private Cell[] hull;                //border, inside and border are disjunkt
         private boolean highlighted;
         private boolean updated = true;
 
         public Territory() {
             strength = 0;
             cells = new ArrayList<>();
-            hull = new Cell[0];
         }
         
         void add(Cell c){
@@ -45,8 +45,50 @@ public class Territory {
         }
         
         public void setOwner(Player p) {
+            if (owner != null) owner.removeTerritory(this);
             this.owner = p;
             p.addTerritory(this);
+        }
+        public Player getOwner() {
+            return this.owner;
+        }
+        
+        public ArrayList<Territory> getNeighborTerritories(Map map){
+            ArrayList<Cell> neighborsOfCell;
+            ArrayList<Territory> neighborsOfTerritory = new ArrayList<>(); //unowned neighboring cells of the territory
+            
+            //collect the territories
+            for(Cell cell: cells){
+                neighborsOfCell = map.getNeighborTiles(cell.x, cell.y);
+                for(Cell c : neighborsOfCell){
+                    if( (!neighborsOfTerritory.contains(c.getOwner())) && (!this.equals(c.getOwner())) ) {
+                        neighborsOfTerritory.add(c.getOwner());
+                    }
+                }
+            }
+
+            return neighborsOfTerritory;
+            
+        }
+        
+        public ArrayList<Cell> getCells(){
+            return cells;
+        }
+        
+        public boolean isNeighbor(Territory t, Map map){
+            ArrayList<Cell> unownedNeighborsOfCell;
+            
+            //check each neighbor cell (of any cell in this) if its owner is t
+            for(Cell cell: cells){
+                unownedNeighborsOfCell = map.getNeighborTiles(cell.x, cell.y);
+                for(Cell c : unownedNeighborsOfCell){
+                    if( t.equals(c.getOwner()))  {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
         }
         
 //        public void calcBoundary(Layout layout){
@@ -72,7 +114,7 @@ public class Territory {
          * @param i the amount of strength to add.
          * @return the amount of strength used up of i.
          */
-        public int addStrength(int i){
+        public int addDices(int i){
             strength+=i;
             if(strength > 8){
                 int ret = 8-(strength-i);
@@ -102,6 +144,13 @@ public class Territory {
         
         public int getStrength(){
             return this.strength;
+        }
+        public void setStrength(int i){
+            if(i<=8){
+                this.strength = i;
+            }else{
+                this.strength = 8;
+            }
         }
 
         public void highlight() {

@@ -9,6 +9,7 @@ import dicewars.states.GameState;
 import dicewars.states.MenuState;
 import dicewars.states.SettingsState;
 import gameTools.state.StateManager;
+import java.util.Random;
 import javax.swing.JFrame;
 
 /**
@@ -27,6 +28,7 @@ public class Main extends JFrame{
     public static boolean dbgField = false;
     public static boolean dbgAll = false;
     public static boolean isPaused = false;
+    public static final Random RANDOM = new Random();
     
     public static int numOfPlayers;
     
